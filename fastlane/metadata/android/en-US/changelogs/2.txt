@@ -1,0 +1,5 @@
+Fixes two wrong strings in the hourly nudge.
+
+"1 hours in" was plural at the one hour where it should not be, and it appeared in the first notification of every fast.
+
+"1h down, 14h to go" never subtracted anything, so nine hours into a fourteen hour fast it still claimed fourteen to go. It now counts down, and past the target it says so rather than offering negative hours.
