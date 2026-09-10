@@ -1,5 +1,6 @@
 package io.github.anders81fin.nullplate.data
 
+import io.github.anders81fin.nullplate.domain.FastEntry
 import io.github.anders81fin.nullplate.domain.FastingState
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,6 +30,27 @@ class SerializationTest {
             ByteArrayInputStream(persisted(original).toByteArray()),
         )
         assertEquals(original, restored)
+    }
+
+    @Test
+    fun `a backup survives a round trip`() {
+        val original = Backup(
+            exportedAt = 1_789_040_464,
+            state = FastingState(fasting = true, startedAt = 1_789_000_000, targetHours = 18.0),
+            history = listOf(
+                FastEntry(start = 1, end = 2, targetHours = 16.0, actualHours = 16.5),
+                FastEntry(start = 3, end = 4, targetHours = 20.0, actualHours = 19.0),
+            ),
+        )
+        assertEquals(original, decodeBackup(encodeBackup(original)))
+    }
+
+    @Test
+    fun `an exported backup stays readable by hand`() {
+        val text = encodeBackup(
+            Backup(exportedAt = 1, state = FastingState(), history = emptyList()),
+        )
+        assertTrue("expected pretty-printed JSON, got: $text", text.contains("\n"))
     }
 
     @Test

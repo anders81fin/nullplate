@@ -1,15 +1,21 @@
 package io.github.anders81fin.nullplate.ui
 
 import android.app.Application
+import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.anders81fin.nullplate.data.FastingRepository
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.decodeBackup
+import io.github.anders81fin.nullplate.data.encodeBackup
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.notify.Notifications
 import io.github.anders81fin.nullplate.notify.NudgeScheduler
 import io.github.anders81fin.nullplate.widget.NullPlateWidgetProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -45,6 +51,38 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
     fun setTarget(targetHours: Double) = viewModelScope.launch {
         repository.setTarget(targetHours)
         syncSurfaces()
+    }
+
+    fun exportTo(uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
+        val context = getApplication<Application>()
+        val text = encodeBackup(repository.exportBackup())
+        runCatching {
+            context.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) }
+        }.fold(
+            onSuccess = { toast("Backup saved") },
+            onFailure = { toast("Could not write that file") },
+        )
+    }
+
+    fun importFrom(uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
+        val context = getApplication<Application>()
+        // A user-supplied file is a real boundary: anything can be in it.
+        runCatching {
+            val text = context.contentResolver.openInputStream(uri)
+                ?.use { it.readBytes().decodeToString() }
+                ?: error("unreadable")
+            repository.importBackup(decodeBackup(text))
+        }.fold(
+            onSuccess = {
+                syncSurfaces()
+                toast("Backup restored")
+            },
+            onFailure = { toast("That file is not a Null Plate backup") },
+        )
+    }
+
+    private suspend fun toast(message: String) = withContext(Dispatchers.Main) {
+        Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
     }
 
     private suspend fun syncSurfaces() {

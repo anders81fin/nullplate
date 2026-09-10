@@ -14,7 +14,11 @@ That is not a promise you have to take on trust. The app declares no `INTERNET` 
 aapt2 dump permissions app-debug.apk
 ```
 
-Your fasting history is health data. It belongs on your own device, and here it has nowhere else to go.
+Android's own cloud backup is switched off too (`allowBackup="false"`). Left on, the system would copy the app's data to the user's Google Drive without the app needing any permission at all, which would have made "stays on the phone" untrue no matter what the app did.
+
+The trade is that nothing else keeps a copy of your history, so **Export** writes it to a JSON file wherever you choose, and **Import** reads one back — for a new phone, or just to keep a copy you can read.
+
+Your fasting history is health data. It belongs on your own device, and here it goes nowhere you did not send it.
 
 ## Features
 
@@ -26,6 +30,8 @@ Your fasting history is health data. It belongs on your own device, and here it 
 - **Recent history** — the last three completed fasts of at least 12h, with actual vs. target hours.
 - **Longest fasts** — the three longest fasts ever measured, regardless of when they happened.
 - **Hourly nudges** — a notification on the hour, both while fasting and during the eating window.
+- **Home screen widget** — the same ring, filling, with the clock in the middle.
+- **Export and import** — the whole history as one readable JSON file.
 
 ## How it works
 

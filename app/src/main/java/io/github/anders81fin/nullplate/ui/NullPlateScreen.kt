@@ -1,5 +1,7 @@
 package io.github.anders81fin.nullplate.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,14 @@ import io.github.anders81fin.nullplate.domain.progressFraction
 fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel = viewModel()) {
     val status by viewModel.status.collectAsStateWithLifecycle()
     val now by viewModel.now.collectAsStateWithLifecycle()
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri -> uri?.let(viewModel::exportTo) }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri -> uri?.let(viewModel::importFrom) }
 
     val state = status.state
     val fasting = state.fasting
@@ -167,6 +177,28 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
 
         HistorySection(title = "RECENT", entries = status.recent)
         HistorySection(title = "LONGEST", entries = status.longest)
+
+        HorizontalDivider()
+
+        // Nothing else holds a copy of this history, so getting it off the
+        // device has to be something the user can actually do.
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            OutlinedButton(
+                onClick = { exportLauncher.launch("null-plate-backup.json") },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text("Export")
+            }
+            OutlinedButton(
+                onClick = { importLauncher.launch(arrayOf("application/json")) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text("Import")
+            }
+        }
 
         // A colophon, not a headline: the name is here to identify the app, and
         // reading from the launcher label keeps it defined in one place.

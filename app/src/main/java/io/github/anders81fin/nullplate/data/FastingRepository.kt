@@ -48,6 +48,25 @@ class FastingRepository(context: Context) {
         appContext.stateDataStore.updateData { it.copy(targetHours = targetHours) }
     }
 
+    suspend fun exportBackup(): Backup = Backup(
+        exportedAt = nowEpochSeconds(),
+        state = appContext.stateDataStore.data.first(),
+        history = appContext.historyDataStore.data.first(),
+    )
+
+    suspend fun importBackup(backup: Backup) {
+        // Merged by start instant rather than replaced, so importing onto a
+        // device that already has history cannot silently discard it.
+        appContext.historyDataStore.updateData { existing ->
+            (existing + backup.history).distinctBy { it.start }.sortedBy { it.end }
+        }
+
+        // A fast running on this device outranks whatever the file says.
+        if (!appContext.stateDataStore.data.first().fasting) {
+            appContext.stateDataStore.updateData { backup.state }
+        }
+    }
+
     suspend fun stop(now: Long = nowEpochSeconds()) {
         val state = appContext.stateDataStore.data.first()
         if (!state.fasting) return
