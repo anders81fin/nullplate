@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- An empty ring: a plate from above, a zero, and a clock face at once. The
-     outer edge sits near 70% of the launcher mask's radius — pushed any wider
-     it stops reading as a ring and becomes the icon's own border, since no
-     background stays visible outside it. Doubles as the monochrome themed-icon
-     layer, which is why it stays a single silhouette. -->
+<!-- A plate from above: the rim, and the well inside it. The inner circle is
+     what separates this from the progress rings every fitness app uses — a
+     lone ring says nothing about what it depicts.
+     The outer edge sits near 70% of the launcher mask's radius; pushed wider
+     it stops reading as a shape and becomes the icon's own border, since no
+     background stays visible outside it. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -12,6 +13,11 @@
     <path
         android:fillColor="#00000000"
         android:strokeColor="#F0E9DE"
-        android:strokeWidth="7"
-        android:pathData="M54,32 a22,22 0 1,1 0,44 a22,22 0 1,1 0,-44" />
+        android:strokeWidth="4.5"
+        android:pathData="M54,31 a23,23 0 1,1 0,46 a23,23 0 1,1 0,-46" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#F0E9DE"
+        android:strokeWidth="2"
+        android:pathData="M54,37.5 a16.5,16.5 0 1,1 0,33 a16.5,16.5 0 1,1 0,-33" />
 </vector>

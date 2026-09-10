@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
-    android:padding="16dp">
+    android:padding="12dp">
 
     <!-- Drawn as a bitmap because RemoteViews cannot host a custom view; the
          text below sits on top of it as real views, so the chronometer keeps
@@ -30,21 +30,21 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textColor="#A8A099"
-            android:textSize="10sp" />
+            android:textSize="9sp" />
 
         <Chronometer
             android:id="@+id/widget_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#F0E9DE"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/widget_idle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#F0E9DE"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:visibility="gone" />
 
         <TextView
@@ -53,6 +53,6 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textColor="#A8A099"
-            android:textSize="10sp" />
+            android:textSize="9sp" />
     </LinearLayout>
 </FrameLayout>

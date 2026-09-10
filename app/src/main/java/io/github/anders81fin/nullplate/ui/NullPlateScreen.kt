@@ -2,6 +2,7 @@ package io.github.anders81fin.nullplate.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -233,13 +237,37 @@ private fun ColumnScope.RingHero(
             .size(216.dp),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxSize(),
-            strokeWidth = 14.dp,
-            strokeCap = StrokeCap.Round,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
+        val trackColor = MaterialTheme.colorScheme.surfaceVariant
+        val arcColor = MaterialTheme.colorScheme.primary
+
+        // Drawn rather than a CircularProgressIndicator, so the plate's rim
+        // sits at the same proportion here as it does in the icon.
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val outerStroke = size.minDimension * 0.065f
+            val outerRadius = (size.minDimension - outerStroke) / 2f
+
+            drawCircle(color = trackColor, radius = outerRadius, style = Stroke(outerStroke))
+            drawCircle(
+                color = trackColor,
+                radius = outerRadius * 0.717f,
+                style = Stroke(size.minDimension * 0.03f),
+            )
+
+            if (progress > 0.001f) {
+                drawArc(
+                    color = arcColor,
+                    startAngle = -90f,
+                    sweepAngle = 360f * progress,
+                    useCenter = false,
+                    topLeft = Offset(
+                        size.width / 2f - outerRadius,
+                        size.height / 2f - outerRadius,
+                    ),
+                    size = Size(outerRadius * 2f, outerRadius * 2f),
+                    style = Stroke(outerStroke, cap = StrokeCap.Round),
+                )
+            }
+        }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
