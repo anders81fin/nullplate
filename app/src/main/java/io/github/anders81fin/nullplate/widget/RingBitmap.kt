@@ -8,7 +8,9 @@ import android.graphics.RectF
 private const val SIZE = 240
 private const val STROKE = 20f
 
-private const val TRACK_COLOR = 0xFF3A342E.toInt()
+// Light enough to read as a plate against the widget's own dark background;
+// a track only a shade off the background disappears at widget size.
+private const val TRACK_COLOR = 0xFF544B41.toInt()
 private const val ARC_COLOR = 0xFFF0E9DE.toInt()
 
 // The launcher icon rendered as a gauge: the same ring, in the same two

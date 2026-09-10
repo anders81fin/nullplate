@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
-    android:padding="10dp">
+    android:padding="16dp">
 
     <!-- Drawn as a bitmap because RemoteViews cannot host a custom view; the
          text below sits on top of it as real views, so the chronometer keeps
