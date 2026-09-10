@@ -1,22 +1,27 @@
 package io.github.anders81fin.nullplate.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,12 +53,6 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
         else -> "Ready when you are"
     }
 
-    val heroStats = when {
-        fasting -> "${formatHm(elapsed)} / ${formatHours(state.targetHours)}h"
-        hasEatingHistory -> "${formatHm(eatingElapsed)} / ${formatHm(eatingTarget)}h"
-        else -> ""
-    }
-
     val heroBlurb = when {
         fasting -> {
             val stage = fastingStage(elapsed)
@@ -66,6 +65,27 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
         else -> "Pick a ratio below and let's go."
     }
 
+    // Idle shows the chosen ratio rather than a 0:00 that looks like a running
+    // clock; the empty ring already says nothing has started.
+    val ringCenter = when {
+        fasting -> formatHm(elapsed)
+        hasEatingHistory -> formatHm(eatingElapsed)
+        else -> PRESETS.firstOrNull { it.hours == state.targetHours }?.label
+            ?: "${formatHours(state.targetHours)}h"
+    }
+
+    val ringCaption = when {
+        fasting -> "/ ${formatHours(state.targetHours)}h"
+        hasEatingHistory -> "/ ${formatHm(eatingTarget)}h"
+        else -> null
+    }
+
+    val ringProgress = when {
+        fasting -> progressFraction(elapsed, state.targetHours)
+        hasEatingHistory -> progressFraction(eatingElapsed, eatingTarget)
+        else -> 0.0
+    }.toFloat()
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -73,38 +93,20 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(
-            text = "Null Plate",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
+        RingHero(
+            progress = ringProgress,
+            center = ringCenter,
+            caption = ringCaption,
+            accent = targetReached,
         )
 
-        HorizontalDivider()
-
         Text(text = heroTitle, style = MaterialTheme.typography.titleLarge)
-
-        if (heroStats.isNotEmpty()) {
-            Text(
-                text = heroStats,
-                style = MaterialTheme.typography.titleMedium,
-                color = if (targetReached) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
 
         Text(
             text = heroBlurb,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-
-        if (fasting) {
-            LinearProgressIndicator(
-                progress = { progressFraction(elapsed, state.targetHours).toFloat() },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
 
         HorizontalDivider()
 
@@ -153,5 +155,51 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
 
         HistorySection(title = "RECENT", entries = status.recent)
         HistorySection(title = "LONGEST", entries = status.longest)
+    }
+}
+
+// The launcher mark doing the app's actual work: an empty plate that fills as
+// the fast runs, with the clock in the middle. Replaces a wordmark, a separate
+// elapsed-time line and a progress bar with one element.
+@Composable
+private fun ColumnScope.RingHero(
+    progress: Float,
+    center: String,
+    caption: String?,
+    accent: Boolean,
+) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(top = 8.dp)
+            .size(216.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxSize(),
+            strokeWidth = 14.dp,
+            strokeCap = StrokeCap.Round,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = center,
+                style = MaterialTheme.typography.displaySmall,
+                color = if (accent) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+            )
+            if (caption != null) {
+                Text(
+                    text = caption,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
