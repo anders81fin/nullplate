@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -100,12 +101,21 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
             accent = targetReached,
         )
 
-        Text(text = heroTitle, style = MaterialTheme.typography.titleLarge)
+        // The hero block is centred to sit under the ring; the controls below
+        // stay left-aligned, because they are a form rather than a headline.
+        Text(
+            text = heroTitle,
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         Text(
             text = heroBlurb,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         HorizontalDivider()
