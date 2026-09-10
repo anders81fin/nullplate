@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Null Plate</string>
+    <string name="channel_timer">Running timer</string>
+    <string name="channel_nudge">Hourly nudges</string>
+</resources>

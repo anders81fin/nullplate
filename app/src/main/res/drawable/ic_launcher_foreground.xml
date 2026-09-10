@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An empty ring: a plate from above, a zero, and a clock face at once. The
+     outer edge sits near 70% of the launcher mask's radius — pushed any wider
+     it stops reading as a ring and becomes the icon's own border, since no
+     background stays visible outside it. Doubles as the monochrome themed-icon
+     layer, which is why it stays a single silhouette. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#F0E9DE"
+        android:strokeWidth="7"
+        android:pathData="M54,32 a22,22 0 1,1 0,44 a22,22 0 1,1 0,-44" />
+</vector>
