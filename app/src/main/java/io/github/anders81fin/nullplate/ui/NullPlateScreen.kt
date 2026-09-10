@@ -22,10 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.github.anders81fin.nullplate.R
 import io.github.anders81fin.nullplate.domain.PRESETS
 import io.github.anders81fin.nullplate.domain.eatingStage
 import io.github.anders81fin.nullplate.domain.eatingTargetHours
@@ -165,6 +167,20 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
 
         HistorySection(title = "RECENT", entries = status.recent)
         HistorySection(title = "LONGEST", entries = status.longest)
+
+        // A colophon, not a headline: the name is here to identify the app, and
+        // reading from the launcher label keeps it defined in one place.
+        Text(
+            text = stringResource(R.string.app_name),
+            // bodySmall, not labelMedium: label styles carry a medium weight
+            // that reads as a heading rather than a signature.
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+        )
     }
 }
 
