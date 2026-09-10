@@ -8,6 +8,7 @@ import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.domain.eatingHourMessages
 import io.github.anders81fin.nullplate.domain.elapsedHours
 import io.github.anders81fin.nullplate.domain.fastHourMessages
+import io.github.anders81fin.nullplate.widget.NullPlateWidgetProvider
 import kotlinx.coroutines.flow.first
 
 class NudgeWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -43,6 +44,8 @@ class NudgeWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
             Notifications.showOngoing(applicationContext, status, now)
         }
 
+        // Keeps the widget's progress bar honest; its clock needs no help.
+        NullPlateWidgetProvider.refresh(applicationContext, status)
         NudgeScheduler.scheduleNext(applicationContext, status, now)
         return Result.success()
     }

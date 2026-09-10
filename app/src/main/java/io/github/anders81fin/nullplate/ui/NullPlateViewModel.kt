@@ -8,6 +8,7 @@ import io.github.anders81fin.nullplate.data.FastingStatus
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.notify.Notifications
 import io.github.anders81fin.nullplate.notify.NudgeScheduler
+import io.github.anders81fin.nullplate.widget.NullPlateWidgetProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,19 +34,20 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
 
     fun start(targetHours: Double) = viewModelScope.launch {
         repository.start(targetHours)
-        syncNotifications()
+        syncSurfaces()
     }
 
     fun stop() = viewModelScope.launch {
         repository.stop()
-        syncNotifications()
+        syncSurfaces()
     }
 
     fun setTarget(targetHours: Double) = viewModelScope.launch {
         repository.setTarget(targetHours)
+        syncSurfaces()
     }
 
-    private suspend fun syncNotifications() {
+    private suspend fun syncSurfaces() {
         val current = repository.status.first()
         val context = getApplication<Application>()
         NudgeScheduler.scheduleNext(context, current)
@@ -54,5 +56,6 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
         } else {
             Notifications.cancelOngoing(context)
         }
+        NullPlateWidgetProvider.refresh(context, current)
     }
 }
