@@ -4,6 +4,18 @@ An intermittent-fasting timer for Android. Tracks both sides of the clock — th
 
 It is a port of [omfasty](https://github.com/anders81fin/omfasty), the same timer written as a bar widget for the [Omarchy](https://omarchy.org) shell. The rules are the same; the plumbing is not, for reasons described below.
 
+## No account, no cloud, no ads
+
+Everything stays on the phone. There is no sign-up, no subscription, no analytics and no advertising, and the app is free software under the MIT license.
+
+That is not a promise you have to take on trust. The app declares no `INTERNET` permission, so Android will refuse it a network connection whatever its code asks for — check the list yourself:
+
+```
+aapt2 dump permissions app-debug.apk
+```
+
+Your fasting history is health data. It belongs on your own device, and here it has nowhere else to go.
+
 ## Features
 
 - **Ongoing notification** counting up from the moment the fast started, with the current physiology stage as its text.
@@ -27,9 +39,9 @@ State lives in two DataStore files — the current fast and the completed histor
 
 ## Permissions
 
-No `INTERNET` permission: the app never talks to a network, and there is nothing to collect.
+The app declares two: `POST_NOTIFICATIONS`, without which the timer and the nudges have nowhere to appear, and `RECEIVE_BOOT_COMPLETED`, which restores the running timer after a restart.
 
-`POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED` are declared directly. WorkManager additionally merges in `ACCESS_NETWORK_STATE`, `WAKE_LOCK` and `FOREGROUND_SERVICE`; none of them are used by this app's own code.
+WorkManager, the library that schedules the hourly nudges, merges in three more of its own — `ACCESS_NETWORK_STATE`, `WAKE_LOCK` and `FOREGROUND_SERVICE`. None are used by this app's code, and none of them grant network access.
 
 ## Building
 
