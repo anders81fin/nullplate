@@ -76,11 +76,9 @@ class NullPlateWidgetProvider : AppWidgetProvider() {
                     if (fasting) "Fasting" else "Eating window",
                 )
                 views.setTextViewText(R.id.widget_target, "/ ${formatHours(target)}h")
-                views.setProgressBar(
-                    R.id.widget_progress,
-                    100,
-                    (progressFraction(elapsedHours(anchor, now), target) * 100).toInt(),
-                    false,
+                views.setImageViewBitmap(
+                    R.id.widget_ring,
+                    ringBitmap(progressFraction(elapsedHours(anchor, now), target).toFloat()),
                 )
             } else {
                 views.setViewVisibility(R.id.widget_timer, View.GONE)
@@ -92,7 +90,7 @@ class NullPlateWidgetProvider : AppWidgetProvider() {
                         ?: "${formatHours(state.targetHours)}h",
                 )
                 views.setTextViewText(R.id.widget_target, "")
-                views.setProgressBar(R.id.widget_progress, 100, 0, false)
+                views.setImageViewBitmap(R.id.widget_ring, ringBitmap(0f))
             }
 
             views.setOnClickPendingIntent(
