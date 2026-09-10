@@ -1,0 +1,25 @@
+Null Plate tracks both sides of the clock — the fast, and the eating window that follows it — with a playful, physiology-flavored commentary track instead of a plain countdown.
+
+An empty plate that fills as the fast runs: the same ring appears on the home screen widget, in the notification shade and as the app's own icon.
+
+No account, no cloud, no ads
+
+Everything stays on the phone. There is no sign-up, no subscription, no analytics and no advertising, and the app is free software under the MIT licence.
+
+That is not a promise you have to take on trust. The app declares no INTERNET permission, so Android will refuse it a network connection whatever its code asks for. Android's own cloud backup is switched off too, which otherwise would have copied your history to Google Drive without the app needing any permission at all.
+
+Nothing else keeps a copy, so you can export the whole history to a readable JSON file wherever you choose, and import it back on a new phone.
+
+Features
+
+* A running timer you can read at a glance, on the home screen and in the notification shade
+* Fasting : eating ratio presets — 14:10, 16:8, 18:6, 20:4, 22:2, and UMAD? (24:0, the joke option)
+* Eating-window tracking once a fast ends, against the window the ratio implies
+* A streak counter for fasts that hit their target
+* Physiology-stage commentary through the fast and through the eating window
+* Recent history, and the longest fasts ever measured
+* Hourly nudges while fasting and while eating
+
+The commentary is tongue-in-cheek and the hour thresholds are the usual intermittent-fasting folklore. It is a timer, not a lab, and it is not medical advice.
+
+Null Plate is a port of omfasty, the same timer written as a bar widget for the Omarchy shell.
