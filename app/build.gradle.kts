@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -64,8 +65,13 @@ android {
     }
 }
 
+// A jvmTarget, not a jvmToolchain: only the bytecode level matters, and
+// pinning a toolchain would demand a JDK 17 that the F-Droid build server does
+// not have and is not allowed to download.
 kotlin {
-    jvmToolchain(17)
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
 }
 
 dependencies {
