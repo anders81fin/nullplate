@@ -15,8 +15,8 @@ android {
         applicationId = "io.github.anders81fin.nullplate"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
     }
 
     // Credentials live outside the repository. Without them the release build
