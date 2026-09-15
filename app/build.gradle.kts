@@ -15,8 +15,8 @@ android {
         applicationId = "io.github.anders81fin.nullplate"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
     }
 
     // Credentials live outside the repository. Without them the release build
@@ -62,6 +62,13 @@ android {
       resources {
         excludes += "/META-INF/{AL2.0,LGPL2.1}"
       }
+    }
+
+    // AGP otherwise embeds a dependency list in the APK signing block, encrypted
+    // with a key only Google Play holds. F-Droid rejects APKs that carry it.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 
