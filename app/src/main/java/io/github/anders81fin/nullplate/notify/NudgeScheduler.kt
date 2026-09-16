@@ -5,6 +5,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.eatingWindowOpen
 import io.github.anders81fin.nullplate.domain.nextHourBoundaryEpochSeconds
 import java.util.concurrent.TimeUnit
 
@@ -21,8 +22,10 @@ object NudgeScheduler {
     ) {
         val anchor = when {
             status.state.fasting -> status.state.startedAt
-            status.lastEnd > 0 -> status.lastEnd
+            status.eatingWindowOpen -> status.lastEnd
             else -> {
+                // Stopped clock: drop the pending boundary instead of letting a
+                // stale one fire hours later.
                 cancel(context)
                 return
             }

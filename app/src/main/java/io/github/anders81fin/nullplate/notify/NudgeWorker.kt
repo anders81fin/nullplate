@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.anders81fin.nullplate.data.FastingRepository
+import io.github.anders81fin.nullplate.data.eatingWindowOpen
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.domain.eatingHourMessages
 import io.github.anders81fin.nullplate.domain.elapsedHours
@@ -17,10 +18,17 @@ class NudgeWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
         val status = FastingRepository(applicationContext).status.first()
         val now = nowEpochSeconds()
 
+        // A nudge can outlive the thing it was about: this work was queued at the
+        // previous boundary and the user may have stopped the clock since, so the
+        // state is re-read here rather than trusted from scheduling time.
         val anchor = when {
             status.state.fasting -> status.state.startedAt
-            status.lastEnd > 0 -> status.lastEnd
-            else -> return Result.success()
+            status.eatingWindowOpen -> status.lastEnd
+            else -> {
+                Notifications.cancelOngoing(applicationContext)
+                NullPlateWidgetProvider.refresh(applicationContext, status)
+                return Result.success()
+            }
         }
 
         // Inexact work can land a little past the mark, so the hour is read off

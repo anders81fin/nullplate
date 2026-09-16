@@ -19,6 +19,21 @@ data class FastingStatus(
     val longest: List<FastEntry> = emptyList(),
 )
 
+/**
+ * The eating window is counting up from the last completed fast.
+ *
+ * Every surface — screen, widget, ongoing notification, nudge scheduler —
+ * needs this same question answered, so it is defined once here. Spelling it
+ * out in each of them is how one of them ends up forgetting [FastingState.idle]
+ * and quietly keeps counting after the user stopped the clock.
+ */
+val FastingStatus.eatingWindowOpen: Boolean
+    get() = !state.fasting && !state.idle && lastEnd > 0
+
+/** Something is on the clock: either a fast or an open eating window. */
+val FastingStatus.counting: Boolean
+    get() = state.fasting || eatingWindowOpen
+
 fun nowEpochSeconds(): Long = System.currentTimeMillis() / 1000
 
 class FastingRepository(context: Context) {
@@ -40,7 +55,12 @@ class FastingRepository(context: Context) {
     suspend fun start(targetHours: Double, now: Long = nowEpochSeconds()) {
         appContext.stateDataStore.updateData { state ->
             if (state.fasting) state
-            else FastingState(fasting = true, startedAt = now, targetHours = targetHours)
+            else FastingState(
+                fasting = true,
+                startedAt = now,
+                targetHours = targetHours,
+                idle = false,
+            )
         }
     }
 
@@ -71,6 +91,24 @@ class FastingRepository(context: Context) {
         val state = appContext.stateDataStore.data.first()
         if (!state.fasting) return
         appContext.historyDataStore.updateData { it + completedEntry(state, now) }
-        appContext.stateDataStore.updateData { it.copy(fasting = false, startedAt = 0) }
+        // Ending a fast is what opens the eating window, so this is the one
+        // transition that deliberately clears idle.
+        appContext.stateDataStore.updateData {
+            it.copy(fasting = false, startedAt = 0, idle = false)
+        }
+    }
+
+    /**
+     * Stop the clock without recording anything.
+     *
+     * Two situations, one outcome: a running fast is discarded — it never
+     * reaches history, so a mistaken start cannot pad the streak — and an open
+     * eating window is simply closed. Kept separate from [stop] so that losing
+     * a 20-hour fast always takes a deliberate second button.
+     */
+    suspend fun stopCounter() {
+        appContext.stateDataStore.updateData {
+            it.copy(fasting = false, startedAt = 0, idle = true)
+        }
     }
 }

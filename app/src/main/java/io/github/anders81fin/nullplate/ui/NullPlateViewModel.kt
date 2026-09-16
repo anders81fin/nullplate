@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.anders81fin.nullplate.data.FastingRepository
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.counting
 import io.github.anders81fin.nullplate.data.decodeBackup
 import io.github.anders81fin.nullplate.data.encodeBackup
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
@@ -45,6 +46,12 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
 
     fun stop() = viewModelScope.launch {
         repository.stop()
+        syncSurfaces()
+    }
+
+    /** Stop the clock without logging: discards a fast, or closes the eating window. */
+    fun stopCounter() = viewModelScope.launch {
+        repository.stopCounter()
         syncSurfaces()
     }
 
@@ -89,7 +96,7 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
         val current = repository.status.first()
         val context = getApplication<Application>()
         NudgeScheduler.scheduleNext(context, current)
-        if (current.state.fasting || current.lastEnd > 0) {
+        if (current.counting) {
             Notifications.showOngoing(context, current)
         } else {
             Notifications.cancelOngoing(context)

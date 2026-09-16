@@ -25,6 +25,7 @@ Your fasting history is health data. It belongs on your own device, and here it 
 - **Ongoing notification** counting up from the moment the fast started, with the current physiology stage as its text.
 - **Fasting : eating ratio presets** — 14:10, 16:8, 18:6, 20:4, 22:2, and UMAD? (24:0, the joke option).
 - **Eating-window tracking** — once a fast ends, the same counter runs against the eating-window target implied by the ratio you picked (`24 - fasting hours`).
+- **Stop whenever you like** — the clock is not a one-way street. "Discard" abandons a running fast without writing it to history (so a mistaken start cannot pad your streak), and "Stop" closes the eating window. Either one leaves the counter, the widget and the ongoing notification quiet until you start the next fast.
 - **Progress bar** and a **streak counter** for fasts that hit their target.
 - **Physiology-stage commentary** — a tongue-in-cheek line that updates through the fast (blood sugar, glycogen, the metabolic switch, ketosis, autophagy) and through the eating window (fueling up, window closing, into overtime). Not medical advice — it's a timer, not a lab.
 - **Recent history** — the last three completed fasts of at least 12h, with actual vs. target hours.
