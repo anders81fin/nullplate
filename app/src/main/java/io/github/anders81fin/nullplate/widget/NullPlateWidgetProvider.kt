@@ -13,6 +13,7 @@ import io.github.anders81fin.nullplate.MainActivity
 import io.github.anders81fin.nullplate.R
 import io.github.anders81fin.nullplate.data.FastingRepository
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.counting
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.domain.PRESETS
 import io.github.anders81fin.nullplate.domain.eatingTargetHours
@@ -56,7 +57,7 @@ class NullPlateWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_null_plate)
             val state = status.state
             val fasting = state.fasting
-            val running = fasting || status.lastEnd > 0
+            val running = status.counting
 
             if (running) {
                 val anchor = if (fasting) state.startedAt else status.lastEnd

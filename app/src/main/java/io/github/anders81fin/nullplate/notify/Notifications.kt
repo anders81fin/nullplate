@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import io.github.anders81fin.nullplate.MainActivity
 import io.github.anders81fin.nullplate.R
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.eatingWindowOpen
 import io.github.anders81fin.nullplate.domain.eatingStage
 import io.github.anders81fin.nullplate.domain.eatingTargetHours
 import io.github.anders81fin.nullplate.domain.elapsedHours
@@ -60,7 +61,9 @@ object Notifications {
         val state = status.state
         val fasting = state.fasting
         val anchor = if (fasting) state.startedAt else status.lastEnd
-        if (!fasting && anchor == 0L) return
+        // A stopped clock has nothing to show; without this the ongoing
+        // notification would sit there counting an eating window the user closed.
+        if (!fasting && !status.eatingWindowOpen) return
 
         val elapsed = elapsedHours(anchor, now)
         val title = if (fasting) {

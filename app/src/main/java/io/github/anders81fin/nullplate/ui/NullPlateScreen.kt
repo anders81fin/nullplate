@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.anders81fin.nullplate.R
+import io.github.anders81fin.nullplate.data.counting
+import io.github.anders81fin.nullplate.data.eatingWindowOpen
 import io.github.anders81fin.nullplate.domain.PRESETS
 import io.github.anders81fin.nullplate.domain.eatingStage
 import io.github.anders81fin.nullplate.domain.eatingTargetHours
@@ -61,7 +63,7 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
     val elapsed = if (fasting) elapsedHours(state.startedAt, now) else 0.0
     val targetReached = fasting && elapsed >= state.targetHours
     val eatingTarget = eatingTargetHours(state.targetHours)
-    val hasEatingHistory = !fasting && status.lastEnd > 0
+    val hasEatingHistory = status.eatingWindowOpen
     val eatingElapsed = if (hasEatingHistory) elapsedHours(status.lastEnd, now) else 0.0
 
     val heroTitle = when {
@@ -168,11 +170,27 @@ fun NullPlateScreen(modifier: Modifier = Modifier, viewModel: NullPlateViewModel
             }
         }
 
-        Button(
-            onClick = { if (fasting) viewModel.stop() else viewModel.start(state.targetHours) },
+        // Primary action, plus a way out that records nothing whenever something
+        // is actually on the clock. "Discard" during a fast, because that is what
+        // happens to it; "Stop" during the eating window, where there is nothing
+        // to throw away. Idle has neither, so the primary button keeps the full
+        // width and this row looks as it did before the feature existed.
+        Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(if (fasting) "End fast" else "Start fast (${formatHours(state.targetHours)}h)")
+            Button(
+                onClick = { if (fasting) viewModel.stop() else viewModel.start(state.targetHours) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(if (fasting) "End fast" else "Start fast (${formatHours(state.targetHours)}h)")
+            }
+
+            if (status.counting) {
+                OutlinedButton(onClick = { viewModel.stopCounter() }) {
+                    Text(if (fasting) "Discard" else "Stop")
+                }
+            }
         }
 
         if (status.recent.isNotEmpty() || status.longest.isNotEmpty()) {
