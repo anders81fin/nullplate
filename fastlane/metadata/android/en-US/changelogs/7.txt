@@ -1,0 +1,7 @@
+Hardening for the backup import; the timer itself is unchanged from 1.1.0.
+
+Restoring a backup used to read the chosen file into memory whole before looking at it, so picking the wrong file — a video, say — could crash the app instead of simply being rejected. The import now reads in small pieces and stops as soon as the file is clearly too large to be a backup.
+
+Two smaller fixes in the same place: a backup written by a future version of the app is now refused instead of being read as though it were this one, and entries that cannot be real — a fast ending before it starts, or negative hours — are dropped rather than being allowed to skew your streak and longest-fast list. The rest of such a file still restores normally.
+
+Failed imports now say why when the reason is known, instead of always reporting a corrupt file.
