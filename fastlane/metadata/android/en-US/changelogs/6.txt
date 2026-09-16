@@ -1,0 +1,7 @@
+You can now stop the counter at any time.
+
+Until now the clock only ever ran: ending a fast dropped straight into the eating window, and the eating window never ended, so the only choice was which of the two was counting.
+
+There are now two ways to finish, kept separate so that stopping is always deliberate. "End fast" records the fast and opens the eating window, exactly as before. Beside it, "Discard" abandons a running fast without writing it to history — a fast started by mistake can no longer pad your streak — and "Stop" closes the eating window. Either one leaves the app, the widget and the ongoing notification quiet until you start the next fast.
+
+Upgrading mid-fast or mid-eating-window changes nothing: the clock keeps running until you stop it yourself.
