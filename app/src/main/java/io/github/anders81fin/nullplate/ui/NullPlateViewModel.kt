@@ -6,9 +6,12 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.anders81fin.nullplate.data.FastingRepository
+import io.github.anders81fin.nullplate.data.BackupFormatException
 import io.github.anders81fin.nullplate.data.FastingStatus
+import io.github.anders81fin.nullplate.data.MAX_BACKUP_BYTES
 import io.github.anders81fin.nullplate.data.counting
 import io.github.anders81fin.nullplate.data.decodeBackup
+import io.github.anders81fin.nullplate.data.readAtMost
 import io.github.anders81fin.nullplate.data.encodeBackup
 import io.github.anders81fin.nullplate.data.nowEpochSeconds
 import io.github.anders81fin.nullplate.notify.Notifications
@@ -73,10 +76,13 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
 
     fun importFrom(uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
         val context = getApplication<Application>()
-        // A user-supplied file is a real boundary: anything can be in it.
+        // A user-supplied file is a real boundary: anything can be in it, at any
+        // size. Read a bounded prefix rather than the whole file -- the picker
+        // will happily hand over a video if that is what was tapped, and
+        // readBytes() on it takes the process down.
         runCatching {
             val text = context.contentResolver.openInputStream(uri)
-                ?.use { it.readBytes().decodeToString() }
+                ?.use { it.readAtMost(MAX_BACKUP_BYTES) }
                 ?: error("unreadable")
             repository.importBackup(decodeBackup(text))
         }.fold(
@@ -84,7 +90,18 @@ class NullPlateViewModel(app: Application) : AndroidViewModel(app) {
                 syncSurfaces()
                 toast("Backup restored")
             },
-            onFailure = { toast("That file is not a Null Plate backup") },
+            // A rejected file is worth explaining when we know why: "too large"
+            // and "newer than this app" are both fixable by the user, and both
+            // look like a corrupt file if reported as one.
+            onFailure = { e ->
+                toast(
+                    if (e is BackupFormatException) {
+                        "Could not import: ${e.message}"
+                    } else {
+                        "That file is not a Null Plate backup"
+                    },
+                )
+            },
         )
     }
 
