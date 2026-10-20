@@ -1,0 +1,5 @@
+A smaller, tidier build; nothing changes in how the app works.
+
+The app is now shrunk at build time, which takes the download from about 8.7 MB to about 1.1 MB.
+
+It also no longer asks for the network-state permission. That came in with a background-task library the app uses, which declares it for jobs that wait for a connection; none of the app's jobs do, and the app never goes online.

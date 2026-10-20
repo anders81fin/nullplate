@@ -15,8 +15,8 @@ android {
         applicationId = "io.github.anders81fin.nullplate"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.1.1"
+        versionCode = 8
+        versionName = "1.1.2"
     }
 
     // Credentials live outside the repository. Without them the release build
@@ -43,7 +43,8 @@ android {
     buildTypes {
         release {
             signingConfig = if (hasKeystore) signingConfigs.getByName("release") else null
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
